@@ -7,7 +7,6 @@ on:
 jobs:
   build-docker:
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
     - name: Checkout repository
@@ -22,13 +21,16 @@ jobs:
       run: |
         pip install mlflow pandas scikit-learn
 
-    - name: Run training with MLflow
+    - name: Run MLflow training
       run: |
-        python MLProject/modelling.py
-
+        cd MLProject
+        python modelling.py
+        
     - name: Build Docker Image with MLflow
       run: |
+        cd MLProject
         RUN_ID=$(cat run_id.txt)
+        echo "Using RUN_ID=$RUN_ID"
         mlflow models build-docker \
           -m runs:/$RUN_ID/model \
           -n ${{ secrets.DOCKER_USERNAME }}/insurance-mlflow
@@ -38,6 +40,6 @@ jobs:
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
           -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    - name: Push Docker Image to Docker Hub
+    - name: Push Docker Image
       run: |
         docker push ${{ secrets.DOCKER_USERNAME }}/insurance-mlflow
