@@ -19,21 +19,23 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install mlflow pandas scikit-learn
+        pip install mlflow pandas scikit-learn cloudpickle
 
     - name: Run MLflow training
       run: |
         cd MLProject
         python modelling.py
-        
+
     - name: Build Docker Image with MLflow
       run: |
         cd MLProject
         RUN_ID=$(cat run_id.txt)
         echo "Using RUN_ID=$RUN_ID"
+
         mlflow models build-docker \
           -m runs:/$RUN_ID/model \
-          -n ${{ secrets.DOCKER_USERNAME }}/insurance-mlflow
+          -n ${{ secrets.DOCKER_USERNAME }}/insurance-mlflow \
+          --enable-mlserver
 
     - name: Login to Docker Hub
       run: |
