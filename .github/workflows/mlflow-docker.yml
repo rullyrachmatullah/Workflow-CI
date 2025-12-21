@@ -17,19 +17,19 @@ jobs:
       with:
         python-version: "3.11"
 
-    - name: Install dependencies
+    - name: Install MLflow & dependencies
       run: |
         pip install mlflow pandas scikit-learn cloudpickle
 
-    - name: Run MLflow training
+    - name: Run MLflow Project
       run: |
         cd MLProject
-        python modelling.py
+        mlflow run .
 
     - name: Build Docker Image with MLflow
       run: |
         cd MLProject
-        RUN_ID=$(cat run_id.txt)
+        RUN_ID=$(ls mlruns/*/*/meta.yaml | head -n 1 | cut -d'/' -f3)
         echo "Using RUN_ID=$RUN_ID"
 
         mlflow models build-docker \
