@@ -26,18 +26,16 @@ jobs:
       run: |
         cd MLProject
         mlflow run .
-
+    
     - name: Build Docker Image
       shell: bash -l {0}
       run: |
         cd MLProject
-        RUN_ID=$(ls mlruns/*/*/meta.yaml | awk -F'/' '{print $(NF-1)}' | head -n 1)
-        echo "RUN_ID=$RUN_ID"
-
         mlflow models build-docker \
-          -m runs:/$RUN_ID/model \
+          -m "models:/insurance-model/latest" \
           -n ${{ secrets.DOCKER_USERNAME }}/insurance-mlflow \
           --enable-mlserver
+
 
     - name: Push Docker Image
       run: |
