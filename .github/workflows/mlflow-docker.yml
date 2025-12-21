@@ -29,13 +29,18 @@ jobs:
       run: |
         pip install mlflow
 
-     - name: Run MLflow Project
-       shell: bash -l {0}
-       run: |
-         cd MLProject
-         mlflow run . --run-id-file run_id.txt
+    # ==============================
+    # RUN MLFLOW PROJECT
+    # ==============================
+    - name: Run MLflow Project
+      shell: bash -l {0}
+      run: |
+        cd MLProject
+        mlflow run . --run-id-file run_id.txt
 
-
+    # ==============================
+    # BUILD DOCKER IMAGE (AUTO-DETECT MODEL)
+    # ==============================
     - name: Build Docker Image with MLflow
       shell: bash -l {0}
       run: |
@@ -44,10 +49,9 @@ jobs:
         echo "Using RUN_ID=$RUN_ID"
 
         mlflow models build-docker \
-          -m runs:/$RUN_ID/model \
+          -m runs:/$RUN_ID \
           -n ${{ secrets.DOCKER_USERNAME }}/insurance-mlflow \
           --enable-mlserver
-
 
     - name: Login to Docker Hub
       run: |
