@@ -17,16 +17,26 @@ jobs:
       with:
         python-version: "3.11"
 
-    - name: Install MLflow & dependencies
+    - name: Set up Miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        python-version: 3.11
+        activate-environment: mlflow-env
+
+    - name: Install MLflow
+      shell: bash -l {0}
       run: |
-        pip install mlflow pandas scikit-learn cloudpickle
+        pip install mlflow
 
     - name: Run MLflow Project
+      shell: bash -l {0}
       run: |
         cd MLProject
         mlflow run .
 
     - name: Build Docker Image with MLflow
+      shell: bash -l {0}
       run: |
         cd MLProject
         RUN_ID=$(ls mlruns/*/*/meta.yaml | head -n 1 | cut -d'/' -f3)
