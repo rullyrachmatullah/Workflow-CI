@@ -7,10 +7,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
 # ==============================
-# MLflow SETUP
+# AUTOLOG (WAJIB, TANPA START_RUN)
 # ==============================
-mlflow.set_tracking_uri("file:./mlruns")
-mlflow.set_experiment("insurance-exp")
 mlflow.autolog()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -29,15 +27,17 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # ==============================
-# Model (TANPA start_run)
+# Model
 # ==============================
 model = RandomForestRegressor(random_state=42)
 model.fit(X_train, y_train)
 
+# ==============================
+# Log model KE RUN (BUKAN REGISTRY)
+# ==============================
 mlflow.sklearn.log_model(
     sk_model=model,
-    artifact_path="model",
-    registered_model_name="insurance-model"
+    artifact_path="model"
 )
 
 print("Training selesai")
